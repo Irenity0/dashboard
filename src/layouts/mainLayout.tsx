@@ -7,15 +7,15 @@ const MainLayout = () => {
 
   const location = useLocation()
 
-  const hideNavbar = location.pathname === "/"
+  const hideNavbarAndFooter = location.pathname === "/"
 
   return (
     <>
     <div className="min-h-[646px] w-11/12 mb-10 mx-auto">
-    {!hideNavbar && <Navbar />}
+    {!hideNavbarAndFooter && <Navbar />}
     <Outlet/>
     </div>
-    <Footer/>
+    {!hideNavbarAndFooter && <Footer/>}
     </>
   )
 }
