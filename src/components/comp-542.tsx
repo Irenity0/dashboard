@@ -2,9 +2,9 @@ import { useState } from "react"
 import { addDays, setHours, setMinutes, subDays } from "date-fns"
 
 import {
-  EventCalendar,
-  type CalendarEvent,
+  EventCalendar
 } from "@/components/event-calendar"
+import type { CalendarEvent } from "./types"
 
 // Sample events data with hardcoded times
 const sampleEvents: CalendarEvent[] = [
