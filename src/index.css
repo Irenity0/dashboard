@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -117,4 +119,9 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+.michroma {
+  font-family: "Michroma", sans-serif;
 }

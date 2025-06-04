@@ -162,7 +162,7 @@ export function MonthView({
                         if (!isFirstDay) {
                           return (
                             <div
-                              key={`spanning-${event.id}-${day.toISOString().slice(0, 10)}`}
+                              key={`spanning-${event._id}-${day.toISOString().slice(0, 10)}`}
                               className="aria-hidden:hidden"
                               aria-hidden={isHidden ? "true" : undefined}
                             >
@@ -191,7 +191,7 @@ export function MonthView({
 
                         return (
                           <div
-                            key={event.id}
+                            key={event._id}
                             className="aria-hidden:hidden"
                             aria-hidden={isHidden ? "true" : undefined}
                           >
@@ -241,7 +241,7 @@ export function MonthView({
 
                                   return (
                                     <EventItem
-                                      key={event.id}
+                                      key={event._id}
                                       onClick={(e) =>
                                         handleEventClick(event, e)
                                       }

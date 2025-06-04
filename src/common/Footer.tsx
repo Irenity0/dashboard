@@ -9,7 +9,7 @@ const Footer = () => {
           size={16}
           aria-hidden="true"
         />
-        Without observing death up close, one can't capture the full picture of what it means to live{' '}
+        Omnes una manet nox ⚰️{' '}
         <span className="text-muted-foreground">·</span>
       </p>
     </div>

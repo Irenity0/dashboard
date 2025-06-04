@@ -1,7 +1,7 @@
 export type CalendarView = "month" | "week" | "day" | "agenda"
 
 export interface CalendarEvent {
-  id: string
+  _id?: string            // Optional – comes from MongoDB
   title: string
   description?: string
   start: Date
@@ -11,6 +11,7 @@ export interface CalendarEvent {
   location?: string
 }
 
+
 export type EventColor =
   | "sky"
   | "amber"
@@ -18,3 +19,4 @@ export type EventColor =
   | "rose"
   | "emerald"
   | "orange"
+  | "black"

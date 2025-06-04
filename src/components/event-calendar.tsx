@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useMemo, useState } from "react"
 import { RiCalendarCheckLine } from "@remixicon/react"
 import {
@@ -19,7 +17,6 @@ import {
   ChevronRightIcon,
   PlusIcon,
 } from "lucide-react"
-import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -38,6 +35,7 @@ import { WeekView } from "./week-view"
 import { DayView } from "./day-view"
 import { AgendaView } from "./agenda-view"
 import { EventDialog } from "./event-dialog"
+import toast from "react-hot-toast"
 
 export interface EventCalendarProps {
   events?: CalendarEvent[]
@@ -153,7 +151,7 @@ export function EventCalendar({
     }
 
     const newEvent: CalendarEvent = {
-      id: "",
+      _id: "",
       title: "",
       start: startTime,
       end: addHoursToDate(startTime, 1),
@@ -163,41 +161,33 @@ export function EventCalendar({
     setIsEventDialogOpen(true)
   }
 
-  const handleEventSave = (event: CalendarEvent) => {
-    if (event.id) {
-      onEventUpdate?.(event)
-      // Show toast notification when an event is updated
-      toast(`Event "${event.title}" updated`, {
-        description: format(new Date(event.start), "MMM d, yyyy"),
-        position: "bottom-left",
-      })
-    } else {
-      onEventAdd?.({
-        ...event,
-        id: Math.random().toString(36).substring(2, 11),
-      })
-      // Show toast notification when an event is added
-      toast(`Event "${event.title}" added`, {
-        description: format(new Date(event.start), "MMM d, yyyy"),
-        position: "bottom-left",
-      })
-    }
-    setIsEventDialogOpen(false)
-    setSelectedEvent(null)
+// When saving a new event, don't assign an _id here
+const handleEventSave = (event: CalendarEvent) => {
+  if (event._id) {
+    onEventUpdate?.(event);
+    toast(`Event "${event.title}" updated`);
+  } else {
+    // Send event *without* _id to parent, API will assign it
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _id, ...eventWithoutId } = event; // strip _id if present
+    onEventAdd?.(eventWithoutId);
+
+    toast(`Event "${event.title}" added`);
   }
+  setIsEventDialogOpen(false);
+  setSelectedEvent(null);
+};
+
 
   const handleEventDelete = (eventId: string) => {
-    const deletedEvent = events.find((e) => e.id === eventId)
+    const deletedEvent = events.find((e) => e._id === eventId)
     onEventDelete?.(eventId)
     setIsEventDialogOpen(false)
     setSelectedEvent(null)
 
     // Show toast notification when an event is deleted
     if (deletedEvent) {
-      toast(`Event "${deletedEvent.title}" deleted`, {
-        description: format(new Date(deletedEvent.start), "MMM d, yyyy"),
-        position: "bottom-left",
-      })
+      toast(`Event "${deletedEvent.title}" deleted`)
     }
   }
 
@@ -205,10 +195,7 @@ export function EventCalendar({
     onEventUpdate?.(updatedEvent)
 
     // Show toast notification when an event is updated via drag and drop
-    toast(`Event "${updatedEvent.title}" moved`, {
-      description: format(new Date(updatedEvent.start), "MMM d, yyyy"),
-      position: "bottom-left",
-    })
+    toast(`Event "${updatedEvent.title}" moved`)
   }
 
   const viewTitle = useMemo(() => {
