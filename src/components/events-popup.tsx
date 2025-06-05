@@ -115,7 +115,7 @@ export function EventsPopup({
 
             return (
               <div
-                key={event.id}
+                key={event._id}
                 className="cursor-pointer"
                 onClick={() => handleEventClick(event)}
               >
