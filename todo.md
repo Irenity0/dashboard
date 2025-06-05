@@ -1,0 +1,5 @@
+- [x] fix sidebar
+- [x] Basic CRUD operation
+- [x] remove sidebar from home page
+- [x] add links in sidebar
+- [ ] authentication
