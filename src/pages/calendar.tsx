@@ -38,6 +38,7 @@ export default function Component() {
   // 🔹 PUT: Update an event
   const handleEventUpdate = async (updatedEvent: CalendarEvent) => {
     try {
+      console.log(updatedEvent._id)
       await axios.put(`${API_BASE_URL}/events/${updatedEvent._id}`, updatedEvent)
 
       setEvents((prev) =>

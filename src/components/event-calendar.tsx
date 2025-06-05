@@ -169,7 +169,7 @@ const handleEventSave = (event: CalendarEvent) => {
   } else {
     // Send event *without* _id to parent, API will assign it
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...eventWithoutId } = event; // strip _id if present
+    const { _id, ...eventWithoutId } = event;
     onEventAdd?.(eventWithoutId);
 
     toast(`Event "${event.title}" added`);
