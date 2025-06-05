@@ -1,4 +1,5 @@
 import App from "@/App";
+import ErrorPage from "@/common/ErrorPage";
 import MainLayout from "@/layouts/mainLayout";
 import Calendar from "@/pages/calendar";
 import Dashboard from "@/pages/Dashboard";
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/*",
+    Component: ErrorPage
+  }
 ]);
 
 export default router;
