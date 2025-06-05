@@ -19,13 +19,15 @@ const MainLayout = () => {
     <>
     <div className="min-h-[646px]">
     {/* <Navbar /> */}
-    <section>
+    <section className="mb-3">
       <SidebarProvider>
         <AppSidebar/>
         <main className="w-full">
-          <section className="w-11/12 mx-auto mt-10">
-          <SidebarTrigger/>
+          <section >
+            <SidebarTrigger/>
+            <div className="mx-3">
             <Outlet/>
+            </div>
           </section>
         </main>
       </SidebarProvider>

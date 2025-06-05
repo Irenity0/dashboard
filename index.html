@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
   <head>
+        <script>
+      // Prevent theme flicker
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (_) {}
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image" href="https://i.pinimg.com/736x/98/0b/93/980b93155d943eb031843811ba89f139.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
