@@ -16,7 +16,7 @@ import { Link } from "react-router"
 const items = [
   {
     title: "Home",
-    url: "/home",
+    url: "/dashboard",
     icon: Home,
   },
   {
@@ -30,7 +30,7 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Search",
+    title: "Tasks",
     url: "/tasks",
     icon: Search,
   },
