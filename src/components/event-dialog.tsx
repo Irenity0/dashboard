@@ -179,6 +179,7 @@ export function EventDialog({
       location,
       color,
       email,
+      status : 'todo'
     });
   };
 
