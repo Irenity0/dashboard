@@ -4,7 +4,7 @@ import { EventCalendar, type CalendarEvent } from "@/components";
 import useEvents from "@/hooks/useEvents";
 import { useAuth } from "@/hooks/useAuth";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://dashboard-server-jet.vercel.app";
 
 export default function Component() {
   const { user } = useAuth();
