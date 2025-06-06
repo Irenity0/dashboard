@@ -1,7 +1,9 @@
+import { KanbanBoard } from "@/board components/KanbanBoard";
+
 const TasksPage = () => {
     return (
         <div>
-            <p>task page</p>            
+            <KanbanBoard/>           
         </div>
     );
 };

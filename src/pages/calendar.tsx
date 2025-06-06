@@ -10,7 +10,7 @@ export default function Component() {
   const { user } = useAuth();
   const email = user?.email;
 
-  const {data: events} = useEvents(email!);
+  const { data: events } = useEvents(email!);
   const [localEvents, setLocalEvents] = useState<CalendarEvent[]>([]);
 
   // 🔹 Update local state when events change
@@ -25,7 +25,7 @@ export default function Component() {
     try {
       const response = await axios.post<{ insertedId: string }>(
         `${API_BASE_URL}/events`,
-        { ...event, email }
+        { ...event, email, status: "todo" }
       );
 
       const newEvent: CalendarEvent = {
@@ -43,7 +43,10 @@ export default function Component() {
   // 🔹 PUT: Update an event
   const handleEventUpdate = async (updatedEvent: CalendarEvent) => {
     try {
-      await axios.put(`${API_BASE_URL}/events/${updatedEvent._id}`, updatedEvent);
+      await axios.put(
+        `${API_BASE_URL}/events/${updatedEvent._id}`,
+        updatedEvent
+      );
       setLocalEvents((prev) =>
         prev.map((event) =>
           event._id === updatedEvent._id ? updatedEvent : event

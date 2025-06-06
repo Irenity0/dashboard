@@ -1,0 +1,329 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import axios from "axios";
+
+import { BoardColumn, BoardContainer } from "./BoardColumn";
+import {
+  DndContext,
+  type DragEndEvent,
+  type DragOverEvent,
+  DragOverlay,
+  type DragStartEvent,
+  useSensor,
+  useSensors,
+  KeyboardSensor,
+  TouchSensor,
+  MouseSensor,
+  type UniqueIdentifier,
+  type Announcements,
+} from "@dnd-kit/core";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import type { Column } from "./BoardColumn";
+import { TaskCard, type Task } from "./TaskCard";
+import { coordinateGetter } from "./multipleContainersKeyboardPreset";
+import { hasDraggableData } from "./utils";
+import useEvents from "@/hooks/useEvents";
+import { useAuth } from "@/hooks/useAuth";
+
+const defaultCols = [
+  {
+    id: "todo" as const,
+    title: "Todo",
+  },
+  {
+    id: "in-progress" as const,
+    title: "In progress",
+  },
+  {
+    id: "done" as const,
+    title: "Done",
+  },
+] satisfies Column[];
+
+export type status = (typeof defaultCols)[number]["id"];
+
+export function KanbanBoard() {
+  const [columns, setColumns] = useState<Column[]>(defaultCols);
+  const pickedUpTaskColumn = useRef<status | null>(null);
+  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+
+  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const { user } = useAuth();
+  const { data: events, isLoading, isError: error } = useEvents(user!.email!);
+
+  useEffect(() => {
+    if (!events) return;
+    const newTasks = events.map((event) => ({
+      _id: event._id || event.title,
+      status: event.status || "todo",
+      content: event.title,
+    }));
+    setTasks(newTasks);
+  }, [events]);
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: coordinateGetter,
+    })
+  );
+
+  async function updateTaskStatusInDB(taskId: string, newStatus: status) {
+    try {
+      await axios.patch(`http://localhost:5000/events/${taskId}`, { status: newStatus });
+    } catch (error) {
+      console.error("Failed to update task status:", error);
+      // Optionally handle UI rollback or notify user here
+    }
+  }
+
+  function getDraggingTaskData(taskId: UniqueIdentifier, status: status) {
+    const tasksInColumn = tasks.filter((task) => task.status === status);
+    const taskPosition = tasksInColumn.findIndex((task) => task._id === taskId);
+    const column = columns.find((col) => col.id === status);
+    return {
+      tasksInColumn,
+      taskPosition,
+      column,
+    };
+  }
+
+  const announcements: Announcements = {
+    onDragStart({ active }) {
+      if (!hasDraggableData(active)) return;
+      if (active.data.current?.type === "Column") {
+        const startstatusx = columnsId.findIndex((id) => id === active.id);
+        const startColumn = columns[startstatusx];
+        return `Picked up Column ${startColumn?.title} at position: ${
+          startstatusx + 1
+        } of ${columnsId.length}`;
+      } else if (active.data.current?.type === "Task") {
+        pickedUpTaskColumn.current = active.data.current.task.status;
+        const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
+          active.id,
+          pickedUpTaskColumn.current
+        );
+        return `Picked up Task ${
+          active.data.current.task.content
+        } at position: ${taskPosition + 1} of ${
+          tasksInColumn.length
+        } in column ${column?.title}`;
+      }
+    },
+    onDragOver({ active, over }) {
+      if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+
+      if (
+        active.data.current?.type === "Column" &&
+        over.data.current?.type === "Column"
+      ) {
+        const overstatusx = columnsId.findIndex((id) => id === over.id);
+        return `Column ${active.data.current.column.title} was moved over ${
+          over.data.current.column.title
+        } at position ${overstatusx + 1} of ${columnsId.length}`;
+      } else if (
+        active.data.current?.type === "Task" &&
+        over.data.current?.type === "Task"
+      ) {
+        const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
+          over.id,
+          over.data.current.task.status
+        );
+        if (over.data.current.task.status !== pickedUpTaskColumn.current) {
+          return `Task ${
+            active.data.current.task.content
+          } was moved over column ${column?.title} in position ${
+            taskPosition + 1
+          } of ${tasksInColumn.length}`;
+        }
+        return `Task was moved over position ${taskPosition + 1} of ${
+          tasksInColumn.length
+        } in column ${column?.title}`;
+      }
+    },
+    onDragEnd({ active, over }) {
+      if (!hasDraggableData(active) || !hasDraggableData(over)) {
+        pickedUpTaskColumn.current = null;
+        return;
+      }
+      if (
+        active.data.current?.type === "Column" &&
+        over.data.current?.type === "Column"
+      ) {
+        const overColumnPosition = columnsId.findIndex((id) => id === over.id);
+
+        return `Column ${
+          active.data.current.column.title
+        } was dropped into position ${overColumnPosition + 1} of ${
+          columnsId.length
+        }`;
+      } else if (
+        active.data.current?.type === "Task" &&
+        over.data.current?.type === "Task"
+      ) {
+        const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
+          over.id,
+          over.data.current.task.status
+        );
+        if (over.data.current.task.status !== pickedUpTaskColumn.current) {
+          return `Task was dropped into column ${column?.title} in position ${
+            taskPosition + 1
+          } of ${tasksInColumn.length}`;
+        }
+        return `Task was dropped into position ${taskPosition + 1} of ${
+          tasksInColumn.length
+        } in column ${column?.title}`;
+      }
+      pickedUpTaskColumn.current = null;
+    },
+    onDragCancel({ active }) {
+      pickedUpTaskColumn.current = null;
+      if (!hasDraggableData(active)) return;
+      return `Dragging ${active.data.current?.type} cancelled.`;
+    },
+  };
+
+  if (isLoading) return <div>Loading events...</div>;
+  if (error) return <div>Error loading events</div>;
+
+  return (
+    <DndContext
+      accessibility={{
+        announcements,
+      }}
+      sensors={sensors}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragOver={onDragOver}
+    >
+      <BoardContainer>
+        <SortableContext items={columnsId}>
+          {columns.map((col) => (
+            <BoardColumn
+              key={col.id}
+              column={col}
+              tasks={tasks.filter((task) => task.status === col.id)}
+            />
+          ))}
+        </SortableContext>
+      </BoardContainer>
+
+      {"document" in window &&
+        createPortal(
+          <DragOverlay>
+            {activeColumn && (
+              <BoardColumn
+                isOverlay
+                column={activeColumn}
+                tasks={tasks.filter((task) => task.status === activeColumn.id)}
+              />
+            )}
+            {activeTask && <TaskCard task={activeTask} isOverlay />}
+          </DragOverlay>,
+          document.body
+        )}
+    </DndContext>
+  );
+
+  function onDragStart(event: DragStartEvent) {
+    if (!hasDraggableData(event.active)) return;
+    const data = event.active.data.current;
+    if (data?.type === "Column") {
+      setActiveColumn(data.column);
+      return;
+    }
+    if (data?.type === "Task") {
+      setActiveTask(data.task);
+      return;
+    }
+  }
+
+  function onDragEnd(event: DragEndEvent) {
+    setActiveColumn(null);
+    setActiveTask(null);
+
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    if (!hasDraggableData(active)) return;
+
+    const activeData = active.data.current;
+
+    if (activeId === overId) return;
+
+    const isActiveAColumn = activeData?.type === "Column";
+    if (!isActiveAColumn) return;
+
+    setColumns((columns) => {
+      const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
+      const overColumnIndex = columns.findIndex((col) => col.id === overId);
+      return arrayMove(columns, activeColumnIndex, overColumnIndex);
+    });
+  }
+
+  async function onDragOver(event: DragOverEvent) {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    if (activeId === overId) return;
+
+    if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+
+    const activeData = active.data.current;
+    const overData = over.data.current;
+
+    const isActiveATask = activeData?.type === "Task";
+    const isOverATask = overData?.type === "Task";
+
+    if (!isActiveATask) return;
+
+    if (isActiveATask && isOverATask) {
+      setTasks((tasks) => {
+const activeIndex = tasks.findIndex((t) => t._id === String(activeId));
+const overIndex = tasks.findIndex((t) => t._id === String(overId));
+
+        const activeTask = tasks[activeIndex];
+        const overTask = tasks[overIndex];
+        if (activeTask && overTask && activeTask.status !== overTask.status) {
+          activeTask.status = overTask.status;
+
+          // Fire off the API update, no need to await here
+          updateTaskStatusInDB(String(activeTask._id), activeTask.status);
+
+
+          return arrayMove(tasks, activeIndex, overIndex - 1);
+        }
+
+        return arrayMove(tasks, activeIndex, overIndex);
+      });
+      return;
+    }
+
+    const isOverAColumn = overData?.type === "Column";
+
+    if (isActiveATask && isOverAColumn) {
+      setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t._id === activeId);
+        const activeTask = tasks[activeIndex];
+        if (activeTask) {
+          activeTask.status = overId as status;
+
+          updateTaskStatusInDB(String(activeTask._id), activeTask.status);
+
+          return arrayMove(tasks, activeIndex, activeIndex);
+        }
+        return tasks;
+      });
+      return;
+    }
+  }
+}

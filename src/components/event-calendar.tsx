@@ -158,7 +158,8 @@ export function EventCalendar({
       start: startTime,
       end: addHoursToDate(startTime, 1),
       allDay: false,
-      email: user!.email!
+      email: user!.email!,
+      status: "todo"
     }
     setSelectedEvent(newEvent)
     setIsEventDialogOpen(true)

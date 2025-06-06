@@ -1,7 +1,9 @@
 export type CalendarView = "month" | "week" | "day" | "agenda"
 
+export type EventStatus = "todo" | "in-progress" | "done"
+
 export interface CalendarEvent {
-  _id?: string            // Optional – comes from MongoDB
+  _id?: string
   title: string
   description?: string
   start: Date
@@ -10,8 +12,8 @@ export interface CalendarEvent {
   color?: EventColor
   location?: string
   email: string
+  status: EventStatus
 }
-
 
 export type EventColor =
   | "sky"
