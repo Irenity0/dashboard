@@ -11,25 +11,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAuth } from './hooks/useAuth';
+import { RiGoogleLine } from '@remixicon/react';
+import toast from 'react-hot-toast';
 
 function App() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const {signInWithGoogle} = useAuth();
 
-  const handleLogin = () => {
-    const validUsername = import.meta.env.VITE_user_name;
-    const validPassword = import.meta.env.VITE_password;
-    console.log(validPassword)
-    console.log(validUsername)
-
-    if (username === validUsername && password === validPassword) {
-      setError('');
-      navigate('/dashboard');
-    } else {
-      setError('Invalid username or password');
-    }
+  const handleGoogleLogin = () => {
+    signInWithGoogle()
+    .then(result => {
+      console.log(result)
+      toast("player logged in.")
+      navigate('/dashboard')
+    })
+    .catch(error => {
+      setError(error)
+      console.log(error)
+    })
   };
 
   return (
@@ -61,20 +62,17 @@ function App() {
             type='text'
             placeholder='Username'
             className='w-full p-2 mt-4 border focus:outline-none bg-black text-white rounded'
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
           />
           <input
             type='password'
             placeholder='Password'
             className='w-full p-2 mt-2 border focus:outline-none bg-black text-white rounded'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
           />
           {error && <p className='text-red-500 mt-2'>{error}</p>}
 
-          <div className='flex justify-end gap-4 mt-4'>
-            <Button onClick={handleLogin}>Submit</Button>
+          <div className='flex justify-between gap-4 mt-4'>
+            <Button size="icon" className='rounded-full' onClick={handleGoogleLogin}><RiGoogleLine/></Button>
+            <Button>Submit</Button>
           </div>
         </DialogContent>
       </Dialog>

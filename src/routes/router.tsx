@@ -7,6 +7,7 @@ import EventsTable from "@/pages/EventsTable";
 import SettingsPage from "@/pages/SettingsPage";
 import TasksPage from "@/pages/TasksPage";
 import { createBrowserRouter } from "react-router";
+import PrivateRoute from "./privateRoute";
 
 const router = createBrowserRouter([
   {
@@ -19,23 +20,23 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        Component: Dashboard,
+        element: <PrivateRoute><Dashboard/></PrivateRoute>
       },
       {
         path: "/calendar",
-        Component: Calendar,
+         element: <PrivateRoute><Calendar/></PrivateRoute>
       },
       {
         path: "/events",
-        Component: EventsTable
+         element: <PrivateRoute><EventsTable/></PrivateRoute>
       },
       {
         path: "/tasks",
-        Component: TasksPage
+         element: <PrivateRoute><TasksPage/></PrivateRoute>
       },
       {
         path: '/settings',
-        Component: SettingsPage
+         element: <PrivateRoute><SettingsPage/></PrivateRoute>
       }
     ],
   },

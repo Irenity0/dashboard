@@ -1,7 +1,6 @@
 import { getEventColorClasses } from "@/components"
 import { useEffect, useState } from "react"
 
-// Define the shape of an Event object
 interface Event {
   _id: string
   title: string

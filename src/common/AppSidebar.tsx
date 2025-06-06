@@ -1,17 +1,17 @@
 import {
   Sidebar,
   SidebarContent,
-  // SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  // SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-import { Link } from "react-router"
+  SidebarFooter,
+} from "@/components/ui/sidebar";
+import { Calendar, Home, Inbox, Search, Settings, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
 
 const items = [
   {
@@ -39,14 +39,34 @@ const items = [
     url: "/settings",
     icon: Settings,
   },
-]
+];
 
 export function AppSidebar() {
+  const { user, signOutUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    signOutUser();
+    navigate("/");
+  };
+
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Naviagtion</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            <div className="flex items-center gap-2">
+              {user?.photoURL && (
+                <img
+                  src={user.photoURL}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              )}
+              <span>Navigation</span>
+            </div>
+          </SidebarGroupLabel>
+
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -63,6 +83,26 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {user && (
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={handleLogOut}>
+                {user.photoURL && (
+                  <img
+                    src={user.photoURL}
+                    alt="Profile"
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                )}
+                <span className="ml-2">Log out</span>
+                <LogOut className="ml-auto w-4 h-4" />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
-  )
+  );
 }
