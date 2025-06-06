@@ -36,6 +36,7 @@ import { DayView } from "./day-view"
 import { AgendaView } from "./agenda-view"
 import { EventDialog } from "./event-dialog"
 import toast from "react-hot-toast"
+import { useAuth } from "@/hooks/useAuth"
 
 export interface EventCalendarProps {
   events?: CalendarEvent[]
@@ -58,6 +59,7 @@ export function EventCalendar({
   const [view, setView] = useState<CalendarView>(initialView)
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const {user} = useAuth()
 
   // Add keyboard shortcuts for view switching
   useEffect(() => {
@@ -156,6 +158,7 @@ export function EventCalendar({
       start: startTime,
       end: addHoursToDate(startTime, 1),
       allDay: false,
+      email: user!.email!
     }
     setSelectedEvent(newEvent)
     setIsEventDialogOpen(true)
