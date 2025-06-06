@@ -4,13 +4,15 @@ import useEvents from "@/hooks/useEvents"
 
 const EventsTable = () => {
   const { user } = useAuth()
-  const [events, loading] = useEvents(user!.email!)
+  const { data: events, isLoading: loading, isError } = useEvents(user!.email!)
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-4">
       {loading ? (
-        <p className="text-sm">Loading events...</p>
-      ) : events.length === 0 ? (
+        <p className="text-sm text-center">Loading events...</p>
+      ) : isError ? (
+        <p className="text-sm text-red-500 text-center">⚠️ Failed to load events. Please try again later.</p>
+      ) : events!.length === 0 ? (
         <p className="text-center text-zinc-400">You haven’t added any tasks yet {">.<"}</p>
       ) : (
         <table className="w-full border text-sm border-collapse overflow-hidden">
@@ -23,7 +25,7 @@ const EventsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {events.map((event) => (
+            {events!.map((event) => (
               <tr
                 key={event._id}
                 className={`${getEventColorClasses(event.color)} border`}

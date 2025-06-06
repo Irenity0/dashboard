@@ -10,12 +10,12 @@ export default function Component() {
   const { user } = useAuth();
   const email = user?.email;
 
-  const [events] = useEvents(email!);
+  const {data: events} = useEvents(email!);
   const [localEvents, setLocalEvents] = useState<CalendarEvent[]>([]);
 
   // 🔹 Update local state when events change
   useEffect(() => {
-    setLocalEvents(events);
+    setLocalEvents(events ?? []);
   }, [events]);
 
   // 🔹 POST: Add a new event

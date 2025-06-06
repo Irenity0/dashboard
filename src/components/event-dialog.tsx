@@ -87,8 +87,8 @@ export function EventDialog({
       setAllDay(event.allDay || false);
       setLocation(event.location || "");
       setColor((event.color as EventColor) || "sky");
-      setEmail(event.email || ""); // <-- Add this line here
-      setError(null); // Reset error when opening dialog
+      setEmail(event.email || ""); 
+      setError(null); 
     } else {
       resetForm();
     }
@@ -104,7 +104,7 @@ export function EventDialog({
     setAllDay(false);
     setLocation("");
     setColor("sky");
-    setEmail(""); // <-- Reset email here as well
+    setEmail(""); 
     setError(null);
   };
 

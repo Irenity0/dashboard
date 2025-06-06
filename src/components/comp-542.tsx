@@ -14,12 +14,15 @@ export default function Component() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
   // ✅ Use the custom useEvents hook
-  const [fetchedEvents] = useEvents(email as string);
+const { data: fetchedEvents } = useEvents(email as string);
+
 
   // 🧠 Sync fetchedEvents into local state
-  useEffect(() => {
+useEffect(() => {
+  if (fetchedEvents) {
     setEvents(fetchedEvents);
-  }, [fetchedEvents]);
+  }
+}, [fetchedEvents]);
 
   /* ───────────────────────────────
      ADD  – include email in body
