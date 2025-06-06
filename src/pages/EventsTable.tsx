@@ -1,39 +1,17 @@
 import { getEventColorClasses } from "@/components"
-import { useEffect, useState } from "react"
-
-interface Event {
-  _id: string
-  title: string
-  start: string
-  end: string
-  location: string
-  color: string
-  allDay: boolean
-}
+import { useAuth } from "@/hooks/useAuth"
+import useEvents from "@/hooks/useEvents"
 
 const EventsTable = () => {
-  const [events, setEvents] = useState<Event[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/events")
-        const data: Event[] = await res.json()
-        setEvents(data)
-      } catch (error) {
-        console.error("Error fetching events:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchEvents()
-  }, [])
+  const { user } = useAuth()
+  const [events, loading] = useEvents(user!.email!)
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-4">
       {loading ? (
         <p className="text-sm">Loading events...</p>
+      ) : events.length === 0 ? (
+        <p className="text-center text-zinc-400">You haven’t added any tasks yet {">.<"}</p>
       ) : (
         <table className="w-full border text-sm border-collapse overflow-hidden">
           <thead className="text-left bg-zinc-900">

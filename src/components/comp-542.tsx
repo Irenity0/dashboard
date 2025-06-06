@@ -1,65 +1,78 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { EventCalendar } from "@/components/event-calendar"
-import type { CalendarEvent } from "./types"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { EventCalendar } from "@/components/event-calendar";
+import type { CalendarEvent } from "./types";
+import { useAuth } from "@/hooks/useAuth";
+import useEvents from "@/hooks/useEvents"; // import your custom hook
 
-const API_BASE_URL = "http://localhost:5000"
+const API_BASE_URL = "http://localhost:5000";
 
 export default function Component() {
-  const [events, setEvents] = useState<CalendarEvent[]>([])
+  const { user } = useAuth();           // { email?: string }
+  const email = user?.email;
 
-  // Fetch events on component mount
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+  // ✅ Use the custom useEvents hook
+  const [fetchedEvents] = useEvents(email as string);
+
+  // 🧠 Sync fetchedEvents into local state
   useEffect(() => {
-    axios
-      .get<CalendarEvent[]>(`${API_BASE_URL}/events`)
-      .then((response) => {
-        setEvents(response.data)
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error)
-      })
-  }, [])
+    setEvents(fetchedEvents);
+  }, [fetchedEvents]);
 
-  // ADD event (POST)
+  /* ───────────────────────────────
+     ADD  – include email in body
+     ─────────────────────────────── */
   const handleEventAdd = async (event: CalendarEvent) => {
+    if (!email) {
+      console.error("Cannot add event: email is undefined");
+      return;
+    }
+
     try {
-      console.log('from comp')
-      const response = await axios.post<{ insertedId: string }>(
+      const res = await axios.post<{ insertedId: string }>(
         `${API_BASE_URL}/events`,
-        event
-      )
+        { ...event, email }
+      );
 
-      const newEvent: CalendarEvent = { ...event, _id: response.data.insertedId }
-      setEvents((prev) => [...prev, newEvent])
-    } catch (error) {
-      console.error("Error adding event:", error)
+      const newEvent: CalendarEvent = {
+        ...event,
+        _id: res.data.insertedId,
+        email,
+      };
+
+      setEvents((prev) => [...prev, newEvent]);
+    } catch (err) {
+      console.error("Error adding event:", err);
     }
-  }
+  };
 
-  // UPDATE event (PUT)
-  const handleEventUpdate = async (updatedEvent: CalendarEvent) => {
+  /* ───────────────────────────────
+     UPDATE
+     ─────────────────────────────── */
+  const handleEventUpdate = async (updated: CalendarEvent) => {
     try {
-      await axios.put(`${API_BASE_URL}/events/${updatedEvent._id}`, updatedEvent)
-
+      await axios.put(`${API_BASE_URL}/events/${updated._id}`, updated);
       setEvents((prev) =>
-        prev.map((event) =>
-          event._id === updatedEvent._id ? updatedEvent : event
-        )
-      )
-    } catch (error) {
-      console.error("Error updating event:", error)
+        prev.map((e) => (e._id === updated._id ? updated : e))
+      );
+    } catch (err) {
+      console.error("Error updating event:", err);
     }
-  }
+  };
 
-  // DELETE event (DELETE)
-  const handleEventDelete = async (eventId: string) => {
+  /* ───────────────────────────────
+     DELETE
+     ─────────────────────────────── */
+  const handleEventDelete = async (id: string) => {
     try {
-      await axios.delete(`${API_BASE_URL}/events/${eventId}`)
-      setEvents((prev) => prev.filter((event) => event._id !== eventId))
-    } catch (error) {
-      console.error("Error deleting event:", error)
+      await axios.delete(`${API_BASE_URL}/events/${id}`);
+      setEvents((prev) => prev.filter((e) => e._id !== id));
+    } catch (err) {
+      console.error("Error deleting event:", err);
     }
-  }
+  };
 
   return (
     <EventCalendar
@@ -68,5 +81,5 @@ export default function Component() {
       onEventUpdate={handleEventUpdate}
       onEventDelete={handleEventDelete}
     />
-  )
+  );
 }
