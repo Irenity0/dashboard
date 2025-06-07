@@ -14,16 +14,30 @@ import {
 import { useAuth } from "./hooks/useAuth";
 import { RiGoogleLine } from "@remixicon/react";
 import toast from "react-hot-toast";
+import { updateProfile } from "firebase/auth";
 
 function App() {
   const [error, setError] = useState("");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
-  const [signupInfo, setSignupInfo] = useState({ email: "", password: "" });
+  const [signupInfo, setSignupInfo] = useState<{
+email: string;
+password: string;
+imageFile: File | null;
+displayName : string
+}>({
+    email: "",
+    password: "",
+    displayName: "",
+    imageFile: null,
+  });
 
   const navigate = useNavigate();
   const { signInWithGoogle, signInUser, createUser } = useAuth();
+
+  const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+  const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
   const handleGoogleLogin = () => {
     signInWithGoogle()
@@ -55,25 +69,57 @@ function App() {
         setError(err.message || "Login failed.");
       });
   };
+  const uploadImage = async (imageFile : File) => {
+    const formData = new FormData();
+    formData.append("image", imageFile);
 
-  const handleSignup = () => {
-    setError("");
-    const { email, password } = signupInfo;
+    const response = await fetch(image_hosting_api, {
+      method: "POST",
+      body: formData,
+    });
 
-    if (!email || !password) {
-      setError("Please enter both email and password.");
-      return;
+    const data = await response.json();
+    if (data.success) {
+      return data.data.url;
+    } else {
+      throw new Error("Image upload failed.");
+    }
+  };
+
+const handleSignup = async () => {
+  setError("");
+  const { email, password, displayName, imageFile } = signupInfo;
+
+  if (!email || !password || !displayName) {
+    setError("Please fill in all required fields.");
+    return;
+  }
+
+  try {
+    const userCredential = await createUser(email, password);
+    const user = userCredential.user;
+
+    let imageUrl = "";
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile);
     }
 
-    createUser(email, password)
-      .then(() => {
-        toast.success("New player registered.");
-        navigate("/dashboard");
-      })
-      .catch((err) => {
-        setError(err.message || "Sign up failed.");
-      });
-  };
+    await updateProfile(user, {
+      displayName,
+      photoURL: imageUrl || undefined,
+    });
+
+    toast.success("New player registered.");
+    navigate("/dashboard");
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("Sign up failed.");
+    }
+  }
+};
+
 
   return (
     <div className="h-[600px] w-full flex flex-col justify-center items-center">
@@ -164,6 +210,26 @@ function App() {
             onChange={(e) =>
               setSignupInfo({ ...signupInfo, email: e.target.value })
             }
+            className="w-full p-2 mt-2 border focus:outline-none bg-black text-white rounded"
+          />
+
+          <input
+            type="text"
+            placeholder="Player Name"
+            value={signupInfo.displayName}
+            onChange={(e) =>
+              setSignupInfo({ ...signupInfo, displayName: e.target.value })
+            }
+            className="w-full p-2 mt-2 border focus:outline-none bg-black text-white rounded"
+          />
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+  const file = e.target.files?.[0] ?? null;
+  setSignupInfo({ ...signupInfo, imageFile: file });
+}}
             className="w-full p-2 mt-2 border focus:outline-none bg-black text-white rounded"
           />
 
