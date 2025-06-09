@@ -67,7 +67,9 @@ const SubjectManager = () => {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline">Saved Subjects</Button>
+          <Button variant="outline" disabled={subjects.length === 0}>
+            Saved Subjects
+          </Button>
         </DialogTrigger>
 
         <DialogContent aria-describedby={undefined} className="max-w-md">
