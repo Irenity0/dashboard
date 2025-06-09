@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 
 function App() {
+  const {user} = useAuth();
   const [error, setError] = useState("");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
@@ -129,13 +130,21 @@ function App() {
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogTrigger asChild>
           <div
-            className="cursor-pointer z-10 w-[270px] h-[60px] bg-no-repeat grayscale-100 hover:scale-110 transition text-center py-2 bg-[url(/button.svg)] -mt-6 -mr-50 font-bold font-mono"
-            onClick={() => setIsLoginOpen(true)}
-          >
-            <FuzzyText baseIntensity={0.1} enableHover={false} fontSize={50}>
-              Enter
-            </FuzzyText>
-          </div>
+  className="cursor-pointer z-10 w-[270px] h-[60px] bg-no-repeat grayscale-100 hover:scale-110 transition text-center py-2 bg-[url(/button.svg)] -mt-6 -mr-50 font-bold font-mono"
+  onClick={() => {
+    if (user) {
+      // User is logged in, redirect immediately
+      navigate("/dashboard");
+    } else {
+      // User not logged in, open login dialog
+      setIsLoginOpen(true);
+    }
+  }}
+>
+  <FuzzyText baseIntensity={0.1} enableHover={false} fontSize={50}>
+    Enter
+  </FuzzyText>
+</div>
         </DialogTrigger>
 
         <DialogContent className="bg-black/80 border">

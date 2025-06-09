@@ -1,4 +1,4 @@
-import SubjectManager from "@/settings components/SubjectManager";
+import SubjectManager from "@/components/settings page/SubjectManager";
 
 const SettingsPage = () => {
   return (
