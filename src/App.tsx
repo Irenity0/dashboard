@@ -22,11 +22,11 @@ function App() {
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   const [signupInfo, setSignupInfo] = useState<{
-email: string;
-password: string;
-imageFile: File | null;
-displayName : string
-}>({
+    email: string;
+    password: string;
+    imageFile: File | null;
+    displayName: string;
+  }>({
     email: "",
     password: "",
     displayName: "",
@@ -69,7 +69,7 @@ displayName : string
         setError(err.message || "Login failed.");
       });
   };
-  const uploadImage = async (imageFile : File) => {
+  const uploadImage = async (imageFile: File) => {
     const formData = new FormData();
     formData.append("image", imageFile);
 
@@ -86,40 +86,39 @@ displayName : string
     }
   };
 
-const handleSignup = async () => {
-  setError("");
-  const { email, password, displayName, imageFile } = signupInfo;
+  const handleSignup = async () => {
+    setError("");
+    const { email, password, displayName, imageFile } = signupInfo;
 
-  if (!email || !password || !displayName) {
-    setError("Please fill in all required fields.");
-    return;
-  }
-
-  try {
-    const userCredential = await createUser(email, password);
-    const user = userCredential.user;
-
-    let imageUrl = "";
-    if (imageFile) {
-      imageUrl = await uploadImage(imageFile);
+    if (!email || !password || !displayName) {
+      setError("Please fill in all required fields.");
+      return;
     }
 
-    await updateProfile(user, {
-      displayName,
-      photoURL: imageUrl || undefined,
-    });
+    try {
+      const userCredential = await createUser(email, password);
+      const user = userCredential.user;
 
-    toast.success("New player registered.");
-    navigate("/dashboard");
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      setError(err.message);
-    } else {
-      setError("Sign up failed.");
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+
+      await updateProfile(user, {
+        displayName,
+        photoURL: imageUrl || undefined,
+      });
+
+      toast.success("New player registered.");
+      navigate("/dashboard");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Sign up failed.");
+      }
     }
-  }
-};
-
+  };
 
   return (
     <div className="h-[600px] w-full flex flex-col justify-center items-center">
@@ -227,9 +226,9 @@ const handleSignup = async () => {
             type="file"
             accept="image/*"
             onChange={(e) => {
-  const file = e.target.files?.[0] ?? null;
-  setSignupInfo({ ...signupInfo, imageFile: file });
-}}
+              const file = e.target.files?.[0] ?? null;
+              setSignupInfo({ ...signupInfo, imageFile: file });
+            }}
             className="w-full p-2 mt-2 border focus:outline-none bg-black text-white rounded"
           />
 

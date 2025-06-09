@@ -55,16 +55,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            <div className="flex items-center gap-2">
-              {user?.photoURL && (
-                <img
-                  src={user.photoURL}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              )}
-              <span>Navigation</span>
-            </div>
+            <span>Navigation</span>
           </SidebarGroupLabel>
 
           <SidebarGroupContent>

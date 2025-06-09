@@ -1,7 +1,9 @@
+import Picker from "@/common/Picker"
+
 const Dashboard = () => {
   return (
     <>
-    <div>Dashboard</div>
+    <Picker/>
     </>
   )
 }
