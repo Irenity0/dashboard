@@ -47,60 +47,66 @@ const SubjectManager = () => {
   };
 
   return (
-    <div className="flex gap-2 items-center mb-4">
-      <input
-        type="text"
-        placeholder="Subject Name"
-        value={subjectName}
-        onChange={(e) => setSubjectName(e.target.value)}
-        className="border px-2 py-1 rounded"
-      />
-      <input
-        type="color"
-        value={subjectColor}
-        onChange={(e) => setSubjectColor(e.target.value)}
-        className="w-10 h-10"
-      />
-      <Button variant="secondary" onClick={handleAddSubject}>
-        Add
-      </Button>
+    <>
+      <label className="block font-medium text-gray-300 mb-1">
+        Add subjects
+      </label>
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline" disabled={subjects.length === 0}>
-            Saved Subjects
-          </Button>
-        </DialogTrigger>
+      <div className="flex gap-2 items-center mb-4">
+        <input
+          type="text"
+          placeholder="Subject Name"
+          value={subjectName}
+          onChange={(e) => setSubjectName(e.target.value)}
+          className="border px-2 py-1 rounded"
+        />
+        <input
+          type="color"
+          value={subjectColor}
+          onChange={(e) => setSubjectColor(e.target.value)}
+          className="w-10 h-10"
+        />
+        <Button variant="secondary" onClick={handleAddSubject}>
+          Add
+        </Button>
 
-        <DialogContent aria-describedby={undefined} className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Saved Subjects</DialogTitle>
-          </DialogHeader>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" disabled={subjects.length === 0}>
+              Saved Subjects
+            </Button>
+          </DialogTrigger>
 
-          {subjects.length === 0 ? (
-            <p className="text-gray-500">No subjects saved.</p>
-          ) : (
-            <ul className="space-y-2 max-h-60 overflow-auto">
-              {subjects.map((subj, index) => (
-                <li
-                  key={index}
-                  className="flex justify-between items-center border px-3 py-2 rounded"
-                  style={{ borderColor: subj.color }}
-                >
-                  <span style={{ color: subj.color }}>{subj.name}</span>
-                  <button
-                    onClick={() => handleDeleteSubject(index)}
-                    title="Delete"
+          <DialogContent aria-describedby={undefined} className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Saved Subjects</DialogTitle>
+            </DialogHeader>
+
+            {subjects.length === 0 ? (
+              <p className="text-gray-500">No subjects saved.</p>
+            ) : (
+              <ul className="space-y-2 max-h-60 overflow-auto">
+                {subjects.map((subj, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between items-center border px-3 py-2 rounded"
+                    style={{ borderColor: subj.color }}
                   >
-                    <X className="w-4 h-4 text-red-500 hover:text-red-700" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
+                    <span style={{ color: subj.color }}>{subj.name}</span>
+                    <button
+                      onClick={() => handleDeleteSubject(index)}
+                      title="Delete"
+                    >
+                      <X className="w-4 h-4 text-red-500 hover:text-red-700" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
+    </>
   );
 };
 

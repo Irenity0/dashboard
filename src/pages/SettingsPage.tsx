@@ -1,4 +1,5 @@
-import SubjectManager from "@/components/settings page/SubjectManager";
+import SubjectManager from "@/components/settings page/SubjectManager"
+import FooterQuoteSettings from "@/components/settings page/FooterQuoteSettings"
 
 const SettingsPage = () => {
   return (
@@ -8,8 +9,10 @@ const SettingsPage = () => {
       {/* Subject Manager Section */}
       <SubjectManager />
 
+      {/* Footer Quote Settings */}
+      <FooterQuoteSettings />
     </div>
-  );
-};
+  )
+}
 
-export default SettingsPage;
+export default SettingsPage
