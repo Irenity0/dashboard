@@ -1,5 +1,5 @@
 export type CalendarView = "month" | "week" | "day" | "agenda"
-
+export type Recurrence = "none" | "week" | "month";
 export type EventStatus = "todo" | "in-progress" | "done"
 
 export interface CalendarEvent {
@@ -13,6 +13,7 @@ export interface CalendarEvent {
   location?: string
   email: string
   status: EventStatus
+  recurrence?: Recurrence;
 }
 
 export type EventColor =

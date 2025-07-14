@@ -5,7 +5,7 @@ import type { CalendarEvent } from "./types";
 import { useAuth } from "@/hooks/useAuth";
 import useEvents from "@/hooks/useEvents"; // import your custom hook
 
-const API_BASE_URL = "https://dashboard-server-jet.vercel.app";
+const API_BASE_URL = "http://localhost:5000";
 
 export default function Component() {
   const { user } = useAuth();           // { email?: string }

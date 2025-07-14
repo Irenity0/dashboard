@@ -66,6 +66,9 @@ export function EventDialog({
   const [error, setError] = useState<string | null>(null);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [recurrence, setRecurrence] = useState<"none" | "week" | "month">(
+    "none"
+  );
 
   // Debug log to check what event is being passed
   useEffect(() => {
@@ -87,8 +90,9 @@ export function EventDialog({
       setAllDay(event.allDay || false);
       setLocation(event.location || "");
       setColor((event.color as EventColor) || "sky");
-      setEmail(event.email || ""); 
-      setError(null); 
+      setEmail(event.email || "");
+      setRecurrence(event.recurrence || "none");
+      setError(null);
     } else {
       resetForm();
     }
@@ -104,7 +108,8 @@ export function EventDialog({
     setAllDay(false);
     setLocation("");
     setColor("sky");
-    setEmail(""); 
+    setEmail("");
+    setRecurrence("none");
     setError(null);
   };
 
@@ -179,7 +184,8 @@ export function EventDialog({
       location,
       color,
       email,
-      status : 'todo'
+      recurrence,
+      status: "todo",
     });
   };
 
@@ -422,6 +428,25 @@ export function EventDialog({
               onChange={(e) => setLocation(e.target.value)}
             />
           </div>
+          <div className="*:not-first:mt-1.5">
+            <Label htmlFor="recurrence">Repeat</Label>
+            <Select
+              value={recurrence}
+              onValueChange={(val) =>
+                setRecurrence(val as "none" | "week" | "month")
+              }
+            >
+              <SelectTrigger id="recurrence">
+                <SelectValue placeholder="Does not repeat" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Does not repeat</SelectItem>
+                <SelectItem value="week">Weekly</SelectItem>
+                <SelectItem value="month">Monthly</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <fieldset className="space-y-4">
             <legend className="text-foreground text-sm leading-none font-medium">
               Etiquette

@@ -2,7 +2,7 @@ import type { CalendarEvent } from "@/components";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dashboard-server-jet.vercel.app";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const useEvents = (email: string) => {
   return useQuery<CalendarEvent[]>({
