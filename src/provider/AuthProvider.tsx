@@ -79,7 +79,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
       console.log("user in the auth state change", currentUser);
        if (currentUser?.email) {
-                axios.post('http://localhost:5000/jwt', { email: currentUser.email }, { withCredentials: true })
+                axios.post('https://dashboard-server-jet.vercel.app/jwt', { email: currentUser.email }, { withCredentials: true })
                     .then(res => console.log(res.data))
                     .catch(error => console.log(error))
             }
