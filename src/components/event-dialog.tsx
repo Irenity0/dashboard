@@ -69,6 +69,10 @@ export function EventDialog({
   const [recurrence, setRecurrence] = useState<"none" | "week" | "month">(
     "none"
   );
+  const [recurrencePattern, setRecurrencePattern] = useState<
+    "daily" | "sameDay"
+  >("daily");
+  const [recurrenceCount, setRecurrenceCount] = useState<number>(1);
 
   // Debug log to check what event is being passed
   useEffect(() => {
@@ -185,6 +189,11 @@ export function EventDialog({
       color,
       email,
       recurrence,
+      recurrencePattern: recurrence === "none" ? undefined : recurrencePattern,
+      recurrenceCount:
+        recurrence === "none" || recurrencePattern !== "sameDay"
+          ? undefined
+          : recurrenceCount,
       status: "todo",
     });
   };
@@ -446,6 +455,42 @@ export function EventDialog({
               </SelectContent>
             </Select>
           </div>
+
+          {recurrence !== "none" && (
+            <div className="*:not-first:mt-1.5">
+              <Label htmlFor="recurrencePattern">Repeat Pattern</Label>
+              <Select
+                value={recurrencePattern}
+                onValueChange={(val) =>
+                  setRecurrencePattern(val as "daily" | "sameDay")
+                }
+              >
+                <SelectTrigger id="recurrencePattern">
+                  <SelectValue placeholder="Select pattern" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily (your style)</SelectItem>
+                  <SelectItem value="sameDay">
+                    Same day each week/month
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {recurrencePattern === "sameDay" && (
+            <div className="*:not-first:mt-1.5">
+              <Label htmlFor="recurrenceCount">Repeat Count</Label>
+              <Input
+                id="recurrenceCount"
+                type="number"
+                min={1}
+                max={12}
+                value={recurrenceCount}
+                onChange={(e) => setRecurrenceCount(Number(e.target.value))}
+              />
+            </div>
+          )}
 
           <fieldset className="space-y-4">
             <legend className="text-foreground text-sm leading-none font-medium">
