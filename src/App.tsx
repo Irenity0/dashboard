@@ -43,7 +43,7 @@ function App() {
   const handleGoogleLogin = () => {
     signInWithGoogle()
       .then((result) => {
-        console.log(result);
+        console.log(result)
         toast("Player logged in.");
         navigate("/dashboard");
       })

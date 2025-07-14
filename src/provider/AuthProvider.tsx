@@ -1,4 +1,5 @@
 import { auth } from "@/firebase/firebase.config";
+import axios from "axios";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -77,6 +78,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       setUser(currentUser);
       setLoading(false);
       console.log("user in the auth state change", currentUser);
+       if (currentUser?.email) {
+                axios.post('http://localhost:5000/jwt', { email: currentUser.email }, { withCredentials: true })
+                    .then(res => console.log(res.data))
+                    .catch(error => console.log(error))
+            }
     });
 
     return () => {

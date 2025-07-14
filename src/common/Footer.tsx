@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Moon } from "lucide-react"
 
 const Footer = () => {
-  const [quote, setQuote] = useState("Omnes una manet nox U+26B0")
+  const [quote, setQuote] = useState("Omnes una manet nox")
 
   useEffect(() => {
     const savedQuote = localStorage.getItem("footerQuote")
